@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IframeHref</title>
+</head>
+<body>
+
+<div>
+    <form action="" method="post">
+        {% for name, val in default_form.items() %}
+        <label for="{{name}}">{{ val["tip"] }}
+            <input type="text" name="{{name}}" value="{{ val['default-value'] }}">
+        </label>
+        {% end %}
+
+        <button type="submit" >开始分析</button>
+    </form>
+    <h1>爬虫记录存储情况分析</h1>
+    <h2>YourForm: </h2>{{ form }}
+    <h2>数据表字段: </h2>{{ all_key }}
+
+
+</div>
+</body>
+</html>

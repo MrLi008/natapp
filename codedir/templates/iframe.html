@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IframeSimulate</title>
+    <link rel="stylesheet" href="https://720yun.cyhhappy.bjzjxfkj.com/single/test/5d82fd1d9b54a33c09808152"
+          type="text/css">
+    <style type="text/css">
+        .left-iframe {
+            width: 40%;
+            height: 98%;
+            float: right;
+            border-right: 1px solid #000;
+            padding-right: 30px;
+            overflow: auto;
+        }
+
+        .left-content-iframe {
+            text-align: left;
+        }
+
+        .right-iframe {
+            width: 55%;
+            height: 98%;
+            float: left;
+            overflow: auto;
+        }
+
+        .jsondata-iframe {
+            margin: 0;
+            height: 70%;
+            width: 100%;
+            overflow: auto;
+            border: black solid 2px;
+        }
+
+        .item-iframe {
+            border-top: black 2px solid;
+            padding-top: 20px;
+            display: block;
+        }
+
+        .markunit {
+            border: gray 1px solid;
+        }
+
+        #maincontent {
+            overflow: auto;
+            height: 100%;
+        }
+
+        .onmousemove {
+            border: green 1px solid;
+        }
+
+        #contextmenu {
+            border: black 2px solid;
+            position: absolute;
+            width: 250px;
+            display: none;
+            overflow: hidden;
+            z-index: 99;
+            background: rgba(207, 207, 208, 0.99);
+        }
+
+        #contextmenu li {
+            border-left: 3px solid transparent;
+            transition: ease 0.3s;
+        }
+
+        #contextmenu li:hover {
+            background: #7fc3d8;
+            border-left: 3px solid #9C27B0;
+        }
+
+        #tag_leftclick_mark {
+            height: 200px;
+            overflow: auto;
+        }
+
+        #tag_leftclick_namevalue {
+            height: 400px;
+            overflow: auto;
+            border: 2px solid #86A5AD;
+        }
+
+        #tag_leftclick_namevalue td {
+            border: 1px solid rgba(97, 22, 20, 0.67);
+            height: 30px;
+        }
+
+        #tag_leftclick_namevalue th {
+            border: 1px solid rgba(97, 22, 20, 0.67);
+            height: 30px;
+        }
+    </style>
+    <style type="text/css">
+        .load {
+            width: 99%;
+            height: auto;
+            overflow: hidden;
+            background: red;
+        }
+
+        .background {
+            display: block;
+            width: 70%;
+            float: right;
+            height: 100%;
+            opacity: 0.4;
+            filter: alpha(opacity=40);
+            background: white;
+            overflow: hidden;
+        {#position: absolute;#}{#top: 0;#}{#left: 0;#}{#z-index: 2000;#}
+        }
+
+        .progressBar {
+            border: solid 2px #86A5AD;
+            background: white 10px 10px;
+        }
+
+        .progressBar {
+            display: block;
+            width: 160px;
+            height: 28px;
+            position: fixed;
+            top: 50%;
+            left: 70%;
+            margin-left: -74px;
+            margin-top: -14px;
+            padding: 10px 10px 10px 50px;
+            text-align: left;
+            line-height: 27px;
+            font-weight: bold;
+            z-index: 2001;
+        }
+    </style>
+</head>
+<body>
+<div class="left-iframe">
+    <div class="left-content-iframe">
+        <div class="default-form">
+            <form action="" method="post">
+                <h1>Task:</h1>
+                {% for name, info in default_form.items() %}
+                <label for="{{ name }}">
+                    {{ info["tip"] }}
+                    <input type="text" name="{{ name }}" value="{{ info["default-value"] }}">
+                </label><br/>
+                {% end %}
+                <label for="domain"><input type="text" name="domain" value="{{ url_target }}" disabled></label>
+                <button type="submit">提交</button>
+            </form>
+        </div>
+        <div class="default-obj">
+            {% if obj %}
+            <ul>
+                {% for name, value in obj.items() %}
+                <li><span>{{ name }}</span><span class="test-obj" name="{{ name }}">{{ value }}</span></li>
+                {% end %}
+            </ul>
+            <button onclick="test_obj({{ obj }})">Begin Test</button>
+            {% end %}
+        </div>
+        <h1>Consolep <p id="tag_mark">Empty</p></h1>
+        <p onclick="bsobjfor('ul')">列表ul标签选择</p>
+        <p onclick="bsobjfor('table')">表格table标签选择</p>
+        <p onclick="bsobjfor('a')">a链接选择</p>
+        <p onclick="bsobjfor('span')">span</p>
+        <p onclick="bsobjfor('p')">p</p>
+        <p onclick="gonextpage()">NextPage</p>
+        <label for="jsondata">
+            选择结果json可视化效果查看
+        </label><br/>
+    </div>
+    <div>
+        <button type="button" onclick="bindhideleft()">HideLeft</button>
+        <button type="button" onclick="bindshowleft()">ShowLeft</button>
+    </div>
+    <div><p>Root Tag:</p>
+        <p id="root_tag">Empty</p></div>
+    <div class="jsondata-iframe" name="jsondata" id="jsondata">
+
+    </div>
+
+    <div>
+        <select name="tag_leftclick_mark" onchange="bindnamevalue(this)">
+            <option value="1">a链接跳转</option>
+            <option value="2">标记name-value</option>
+        </select>
+        <button type="button" onclick="bindpagelist_add()">添加分页的列表数据</button>
+        <label for="pages_startpage_tag_mark">pages_startpage:
+            <span name="pages_startpage_tag_mark"></span>
+        </label>
+        <label for="pages_startpage_tag_mark_item">pages_startpage_item:
+            <span name="pages_startpage_tag_mark_item"></span>
+        </label>
+        <label for="列表页选择">列表页分页标签添加</label>
+        <ul id="tag_leftclick_mark">
+
+        </ul>
+        <label>
+            <button type="button" onclick="bindnamevalue_add()">详情页字段/值添加</button>
+        </label>
+        <label for="contentlist_tag_mark">contentlist:
+            <span name="contentlist_tag_mark"></span>
+        </label>
+        <label for="contentlist_tag_mark_item">pages_startpage_item:
+            <span name="contentlist_tag_mark_item"></span>
+        </label>
+        <table id="tag_leftclick_namevalue">
+            <thead>
+            <tr>
+                <th>name1</th>
+                <th>name2</th>
+                <th>name3</th>
+                <th>name4</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr>
+                <td>value1</td>
+                <td>value2</td>
+                <td>value3</td>
+                <td>value4</td>
+                <td><span onclick="bindnamevalue_remove(this, 'tr')">本行去除</span></td>
+            </tr>
+            <tr>
+                <td>value1</td>
+                <td>value2</td>
+                <td>value3</td>
+                <td>value4</td>
+                <td><span onclick="bindnamevalue_remove(this, 'tr')">本行去除</span></td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="right-iframe">
+    <div id="maincontent" onclick="bindlocation()" onmousemove="bindmousemove()"
+         oncontextmenu="maincontent_contextmenu()">
+
+    </div>
+    <div class="load">
+        <div id="background" class="background" style="display: none; "></div>
+        <div id="progressBar" class="progressBar" style="display: none; ">数据加载中，请稍等...</div>
+    </div>
+    <div id="contextmenu" hidden="hidden" onclick="contextmenu_hide(this)">
+        <ul>
+            <li onclick="find_same_class()"><p>元素同class获取</p></li>
+            <li onclick="find_same_tag()"><p>元素同tag获取</p></li>
+            <li onclick="find_mark()"><p>区域标记</p></li>
+            <li onclick="find_mark_nectpage()"><p>NextPageMark</p></li>
+            <li onclick="clear_choose()"><p>clear</p></li>
+        </ul>
+    </div>
+</div>
+</body>
+
+<script src="https://720yun.cyhhappy.bjzjxfkj.com/single/test/5d82fd649b54a33c09808156"></script>
+<script src="https://720yun.cyhhappy.bjzjxfkj.com/single/test/5d82fb549b54a33c09808112"></script>
+<script>
+    function hrefreformat(url) {
+        let url_ = "";
+        if (url.indexOf('/') === 0) {
+            url_ = url;
+        } else if (url.substring(0, 4) === 'http') {
+            console.log(this);
+            console.log('包含了其他域名的链接, 暂略');
+        } else {
+            let arr = opt.url_target_pre.split('/');
+            url_ = arr.slice(0, arr.length - 1).join('/') + '/' + url;
+        }
+        console.log("target: " + url_);
+        return url_;
+    }
+
+    // 返回基本信息
+    function basemsg() {
+        let obj = {};
+        obj['domain'] = $("input[name=domain]").val();
+        obj['province'] = $("input[name=province]").val();
+        obj['city'] = $("input[name=city]").val();
+        obj['county'] = $("input[name=county]").val();
+        obj['taskname'] = $("input[name=taskname]").val();
+        obj['pageurl'] = "";
+        obj['page_source'] = "";
+        obj['record'] = {};
+        return obj;
+    }
+    // 清楚text中的空白符
+    function clean(s) {
+        return s.replace(/\s+/g, '');
+    }
+
+    /***
+     * name列表和value二维表转dict
+     * @param namelist {Array}
+     * @param valuelist {Array}
+     * @returns {[]}
+     */
+    function covert2dict(namelist, valuelist) {
+        let obj = [];
+        for (let i in valuelist) {
+            let temp = basemsg();
+            for (let j in namelist) {
+                temp["record"][namelist[j]] = valuelist[i][j];
+            }
+            temp['pageurl'] = temp["record"]['pageurl'];
+            delete temp['record']['pageurl'];
+            obj.push(temp);
+        }
+        return obj
+    }
+
+
+    /***
+     */
+    class opt_page {
+        constructor() {
+            this.url_target = "";  // 当前访问的页面的URL
+            this.url_target_pre = "";  // 上次访问的URL,与本次url做参照,拼接相对路径
+            this.tag_mark_item = "";  // 选择的tag名称,选择区域标记后,过滤其中的tag,保留需要的.
+            this.pre_tag_mousemove = "";  // 鼠标移动的上一个节点
+            this.style_onmousemove = "onmousemove";  // 鼠标移动时的显示样式
+            this.style_sameclass_tag = "save-class-tag";  // 同类名的标记样式
+            this.tag_mark_real = "";  // 区域标记tag+index
+            this.tag_rightclick_real_nextpage = "";  // 下一页 tag+index
+            this.tag_rightclick_real = "";  // 右键点击的 tag+index
+            /**
+             * 左键点击事件标记
+             * 1 === a链接跳转
+             * 2 === 标记name-value
+             */
+            this.tag_leftclick_mark = "1";
+
+        };
+
+        set = (name, value) => {
+            this[name] = value;
+        };
+        go = (url_target) => {
+            this.set('url_target', url_target);
+            $("input[name=firstpage]").val(url_target);
+            this.index();
+        };
+        /**
+         * 页面跳转
+         * @param url
+         */
+        index = () => {
+            let temp = this.url_target;
+            if (temp) {
+                this.url_target = hrefreformat(temp);
+                let _index = $.ajax({
+                    url: this.url_target,
+                    method: 'get',
+                    data: {},
+                    success: res => {
+                        $("#maincontent").html(res);
+                        $("input[name=firstpage]").val(this.url_target);
+                    },
+                    error: err => {
+                    },
+                    complete: res => {
+                    },
+                });
+                $.when(_index).done(() => {
+                    $("#background,#progressBar").hide();
+                    this.set('url_target_pre', this.url_target);
+                    this.bsobjfor();
+                });
+            }
+        };
+        bsobjfor = () => {
+            $("#jsondata").html("");
+            $("input[name=tag_mark_item]").val(this.tag_mark_item);
+            if (this.tag_mark_real.length === 0) {
+                return;
+            }
+            $(node_locat(this.tag_mark_real)).addClass(opt.style_onmousemove);
+            $.each($(node_locat(this.tag_mark_real)).find(this.tag_mark_item), (index, item) => {
+                let html = "<div class=\"markunit\">" + $(item).prop("outerHTML") + "</div>";
+                $("#jsondata").append(html);
+            });
+        };
+    }
+
+    let opt = new opt_page();
+</script>
+<script>
+    // 页面默认访问 http://localhost:8008/
+    /**
+     * 拦截maincontent内所有的点击事件
+     */
+    function bindlocation() {
+        $("#contextmenu").hide();  // 隐藏菜单
+        let e = arguments.callee.caller.arguments[0];
+        let url_target = $(e.target).attr('href');
+        if (url_target) {
+            $(e.target).attr('href', '#');
+            $(e.target).removeAttr('target');
+        } else {
+            url_target = $(e.target).parents('a').attr('href');
+            $(e.target).parent('a').attr('href', '#');
+            $(e.target).parent('a').removeAttr('target');
+        }
+        // 页面跳转
+        url_target = clean(url_target);
+        if (parseInt(opt.tag_leftclick_mark) === 1) {
+            opt.go(url_target);
+        }
+    }
+    function bindhashchange(e){
+        console.log('bind hashchange: ');
+        console.log(e);
+    }
+    window.addEventListener('hashchange', bindhashchange);
+
+    function bindhideleft() {
+        $("#maincontent").hide();
+    }
+
+    function bindshowleft() {
+        $("#maincontent").show();
+    }
+
+    /**
+     * @type {function}
+     */
+    function bsobjfor(tag_mark_item) {
+        opt.set('tag_mark_item', tag_mark_item);
+        opt.bsobjfor();
+    }
+
+    function gonextpage() {
+        $(node_locat(tag_rightclick_real_nextpage)).click();
+    }
+
+    /**
+     * 记录上一次操作
+     * @type {string}
+     */
+    let pre = "";
+
+    /**
+     * 鼠标移动事件效果显示
+     */
+    function bindmousemove() {
+        if (pre !== "") {
+            $(pre).removeClass(opt.style_onmousemove);
+        }
+        let e = arguments.callee.caller.arguments[0];
+        pre = e.target;
+        $(pre).addClass(opt.style_onmousemove);
+        $("#maincontent").removeClass(opt.style_onmousemove);
+        $("#root_tag").text(pre.localName);
+    }
+
+    /**
+     * 查找同类名的标签
+     */
+    function find_same_class() {
+        $(node_locat(opt.tag_rightclick_real)).removeClass(opt.style_sameclass_tag);
+        let classvalue = $(node_locat(opt.tag_rightclick_real)).attr('class');
+        if (classvalue.length === 0) {
+            console.log("no class...|" + classvalue + "|");
+            return;
+        }
+        console.log("类名: " + classvalue + " " + $("." + classvalue).length);
+        $.each($("." + classvalue), (index, item) => {
+            $(item).addClass(opt.style_sameclass_tag);
+        });
+    }
+
+    /**
+     * 查找同tag的标签
+     */
+    function find_same_tag() {
+        let tag_mark_item = $(node_locat(opt.tag_rightclick_real)).prop("nodeName");
+        console.log("tag_mark_item: " + tag_mark_item + " " + $(tag_mark_item).length);
+        $.each($(tag_mark_item), (index, item) => {
+            $(item).addClass(opt.style_onmousemove);
+        })
+    }
+
+    /**
+     * 区域标记
+     */
+    function find_mark() {
+        opt.set('tag_mark_real', opt.tag_rightclick_real);
+        $(node_locat(opt.tag_mark_real)).addClass(opt.style_onmousemove);
+        $("#tag_mark").text($(node_locat(opt.tag_mark_real)).prop("nodeName").toLowerCase());
+        $("input[name=tag_mark]").val(opt.tag_mark_real);
+    }
+
+    /***
+     * 下一页按钮标记
+     */
+    function find_mark_nectpage() {
+        opt.set('tag_rightclick_real_nextpage', opt.tag_rightclick_real);
+        $("input[name=tag_nextpage]").val(opt.tag_rightclick_real_nextpage);
+    }
+
+    /**
+     * 清除选中状态
+     */
+    function clear_choose() {
+        $("." + opt.style_onmousemove).removeClass(opt.style_onmousemove);
+    }
+
+    function contextmenu_hide(obj) {
+        $(obj).hide();
+    }
+
+    /***
+     * 记录右键元素,记录如何从根节点html查找到此元素.与数据动态更新链接.
+     * @type {tag}
+     */
+    function maincontent_contextmenu() {  // 记录右键时点击的标签
+        let e = arguments.callee.caller.arguments[0];
+        opt.set('tag_rightclick_real', node_index(e.target));
+        console.log("此元素在父级标签的位置: " + opt.tag_rightclick_real);
+        e.preventDefault();
+        let menu = $("#contextmenu");
+        menu.css({
+            'left': e.pageX + 'px',
+            'top': e.pageY + 'px'
+        });
+        menu.show();
+    }
+
+    /***
+     *
+     */
+    function bindnamevalue(obj) {
+        opt.set('tag_leftclick_mark', $(obj).val());
+        console.log(opt.tag_leftclick_mark);
+    }
+
+    /***
+     * 添加key value 对
+     */
+    function bindpagelist_add() {
+        let name_id = "tag_leftclick_mark";
+        let tag_ul = $("#" + name_id);
+        let tag_a = [];
+        $.each($("#jsondata .markunit"), (index, item) => {
+            let html = "<li>" +
+                "<button onclick=\"bindnamevalue_remove(this, \'li\')\">-</button>" +
+                $(item).prop('outerHTML') +
+                "</li>";
+            $(tag_ul).append(html);
+            let temp = basemsg();
+            temp['pageurl'] = hrefreformat(clean($(item).find('a').attr('href')));
+            tag_a.push(temp);
+        });
+        console.log(tag_a);
+        $("span[name=pages_startpage_tag_mark]").text(opt.tag_mark_real);
+        $("span[name=pages_startpage_tag_mark_item]").text(opt.tag_mark_item);
+    }
+
+    function bindnamevalue_add() {
+        if (opt.tag_mark_item === "table") {
+            let namelist = [];
+            let valuelist = [];
+            $.each($("#jsondata .markunit " + opt.tag_mark_item).find("tr"), (index, item) => {
+                if (index === 0) {
+                    $.each($(item).find('th'), (index, tagth) => {
+                        namelist.push(clean($(tagth).text()));
+                    });
+                    $.each($(item).find('td'), (index, tagtd) => {
+                        namelist.push(clean($(tagtd).text()));
+                    });
+                    namelist.push("pageurl");
+                } else {
+                    let temp = [];
+                    $.each($(item).find('th'), (index, tagth) => {
+                        temp.push(clean($(tagth).text()));
+                    });
+                    $.each($(item).find('td'), (index, tagtd) => {
+                        temp.push(clean($(tagtd).text()));
+                    });
+                    temp.push(hrefreformat(clean($(item).find('a').attr('href'))));
+                    valuelist.push(temp);
+                }
+            });
+            let jsondata = covert2dict(namelist, valuelist);
+            console.log(jsondata);
+            $("#tag_leftclick_namevalue").html(jsondata);
+            $("span[name=contentlist_tag_mark]").text(opt.tag_mark_real);
+            $("span[name=contentlist_tag_mark_item]").text(opt.tag_mark_item);
+        }
+    }
+
+    function bindnamevalue_remove(obj, tag) {
+        $(obj).parents(tag).remove();
+    }
+
+    /***
+     * 递归查找选择节点的定位信息,暂时通过tag+index定位.
+     * 不支持位置可变的tag.
+     * @param node
+     * @returns {string}
+     */
+    function node_index(node) {
+        if ($(node).prop("nodeName").toLowerCase() === 'html') {
+            return "";
+        }
+        return node_index($(node).parent()) + "|"
+            + $(node).prop('nodeName').toLowerCase() + " "
+            + ($(node).index());
+    }
+
+    /***
+     * 根据node_index 查找到的tag+index定位,动态选择tag
+     * @param nodeindex
+     * @returns {jQuery.fn.init|jQuery|HTMLElement}
+     */
+    function node_locat(nodeindex) {
+        let arr = nodeindex.split('|');
+        let node = $("html");
+        for (let i in arr) {
+            if (arr[i].length === 0) {
+                continue;
+            }
+            let temp = arr[i].split(' ');
+            let tag_mark_item = temp[0];
+            let tagindex = parseInt(temp[1]);
+            node = $(node).children().eq(tagindex);
+        }
+        return node;
+    }
+
+    /***
+     * 效果测试,通过配置的taskname,依照firstpage,tag_mark,tag_nextpage
+     * 模拟访问请求,默认访问次数
+     */
+    let simulatecount = 10;
+
+    function test_obj(obj) {
+        console.log(obj);
+        taskobj = {};
+        $.each($(".test-obj"), (index, item) => {
+            taskobj[$(item).attr('name')] = $(item).text();
+        });
+        console.log(taskobj);
+        // 第一页
+        let _go = opt.go;
+        $.when(_go(taskobj.firstpage)).done(() => {
+            opt.set('tag_mark_real', taskobj.tag_mark);
+            opt.set('tag_nextpage', taskobj.tag_nextpage);
+            opt.set('tag_mark_item', taskobj.tag_mark_item);
+            let count = 0;
+            let stop = setInterval(() => {
+                $(node_locat(taskobj.tag_mark)).addClass(opt.style_onmousemove);
+                $(node_locat(taskobj.tag_nextpage)).addClass(opt.style_onmousemove);
+                $("#tag_mark").text($(node_locat(opt.tag_mark_real)).prop("nodeName").toLowerCase());
+                $(node_locat(taskobj.tag_nextpage)).click();
+                $(node_locat(taskobj.tag_mark)).addClass(opt.style_onmousemove);
+                count += 1;
+                if (count > simulatecount) {
+                    clearInterval(stop);
+                }
+            }, 2000);
+
+        });
+    }
+</script>
+<script>
+    /********************************
+     * 函数调用区
+     */
+    // 加载首页, 默认'/'
+    {#opt.go('/tmp/nav_qingdan.shtml?ss_id=1022');#}
+    {#opt.go('/powerlist/home.aspx');#}
+    {#opt.set('url_target', '/zwgk/qzqd');#}
+    opt.go('/');
+</script>
+</html>

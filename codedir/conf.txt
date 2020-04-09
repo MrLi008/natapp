@@ -1,0 +1,18 @@
+[productor]
+# port=8008
+port=8008
+is_cache=True
+[consumer]
+url_base=http://localhost:8008/
+# url_base=http://39.100.87.147:8008/
+#url_base=http://localhost:8009/
+# url_base=http://39.100.87.147:8008/
+# url_target=http://210.31.104.120:8080/
+# url_target=http://localhost:8001/
+# url_target=http://39.98.75.27:8001/
+# url_target=http://www.jcgov.gov.cn/
+# url_target=http://www.lczf.gov.cn/
+# url_target=https://fund.eastmoney.com/
+# url_target=http://www.sxtywbl.gov.cn/
+url_target=http://192.168.0.185:8629/
+refresh=0.01

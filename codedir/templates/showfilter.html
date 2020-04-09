@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ShowFilter</title>
+    <style>
+        #recordfilter, th, td {
+            border: 1px solid gray;
+        }
+
+        td p {
+            width: 125px;
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<h1>Filter: </h1>
+<div>
+    {% if context %}
+    {% if context.get('filter') %}
+    <ul id="tag_ul">
+        <li><label for="province">province
+            <select name="province" id="" onchange="choosefilter()">
+                {% for index, name in enumerate(context.get('filter')) %}
+                {% if index == 0 %}
+                <option value="{{ name }}" onclick="nextselectoption(this)" >{{ name }}</option>
+                {% else %}
+                <option value="{{ name }}" onclick="nextselectoption(this)">{{ name }}</option>
+                {% end %}
+                {% end %}
+            </select>
+        </label></li>
+        <li>请选择上级</li>
+        <li>请选择上级</li>
+        <li>请选择上级</li>
+        <li>请选择上级</li>
+    </ul>
+    {% end %}
+    {% end %}
+</div>
+
+<div>
+    <div class="data-show">
+        <table id="recordfilter">
+
+        </table>
+    </div>
+    <div class="data-detail">
+
+    </div>
+</div>
+</body>
+<script src="https://720yun.cyhhappy.bjzjxfkj.com/single/test/5d82fd649b54a33c09808156"></script>
+<script src="https://720yun.cyhhappy.bjzjxfkj.com/single/test/5d82fb549b54a33c09808112"></script>
+<script>
+    let tag_ul = $("#tag_ul");
+    choosefilter = () => {
+        let province = $("select[name=province]").val();
+        $.ajax({
+            url: '/nocover/showfilter',
+            method: 'post',
+            data: {
+                filters: province,
+                step: 'city'
+            },
+            success: res => {
+                console.log(res);
+                let html = "<label for=\"province\">province\n" +
+                    "            <select name=\"city\" id=\"\" onchange=\"choosefilter_city()\">\n";
+                for (let i in res) {
+
+                    html += "                <option value=\"" +
+                        i + "\" onclick=\"nextselectoption(this)\">" + i + "</option>\n";
+                }
+                html += "            </select>\n" +
+                    "        </label>";
+                $(tag_ul).find('li').eq(1).html(html);
+                $(tag_ul).find('li').eq(2).html("请选择上级");
+                $(tag_ul).find('li').eq(3).html("请选择上级");
+                choosefilter_city();
+            },
+            error: err => {
+                console.log(err)
+            },
+            complete: res => {
+            }
+        });
+    };
+    choosefilter_city = () => {
+        let city = $("select[name=city]").val();
+        let province = $("select[name=province]").val();
+        $.ajax({
+            url: '/nocover/showfilter',
+            method: 'post',
+            data: {
+                filters: province + ',' + city,
+                step: 'county'
+            },
+            success: res => {
+                console.log(res);
+                let html = "<label for=\"county\">county\n" +
+                    "            <select name=\"county\" id=\"\" onchange=\"choosefilter_record()\">\n";
+                for (let i in res) {
+                    html += "                <option value=\"" +
+                        i + "\" onclick=\"nextselectoption(this)\">" + i + "</option>\n";
+                }
+                html += "            </select>\n" +
+                    "        </label>";
+                $(tag_ul).find('li').eq(2).html(html);
+                $(tag_ul).find('li').eq(3).html("请选择上级");
+                choosefilter_record();
+            },
+            error: err => {
+                console.log(err)
+            },
+            complete: res => {
+            }
+        });
+
+    };
+    choosefilter_record = () => {
+        let data = [
+            $("select[name=province]").val(),
+            $("select[name=city]").val(),
+            $("select[name=county]").val(),
+        ].join(',');
+        $.ajax({
+            url: '/nocover/showfilter',
+            method: 'post',
+            data: {
+                step: 'details',
+                filters: data
+            },
+            success: res => {
+                console.log(res);
+                let html = "<label for=\"record\">record\n" +
+                    "            <select name=\"recordname\" id=\"\" onchange=\"choosefilter_record_details()\">\n";
+                for (let i in res) {
+                    html += "                <option value=\"" +
+                        i + "\" onclick=\"nextselectoption(this)\">" + i + "</option>\n";
+                }
+                html += "            </select>\n" +
+                    "        </label>";
+                $("#tag_ul").find('li').eq(3).html(html);
+                choosefilter_record_details();
+            },
+            error: err => {
+                console.log(err)
+            },
+            complete: res => {
+            }
+        });
+    };
+    choosefilter_record_details = () => {
+        let data = [
+            $("select[name=province]").val(),
+            $("select[name=city]").val(),
+            $("select[name=county]").val(),
+        ].join(',');
+        $.ajax({
+            url: '/nocover/showfilter',
+            method: 'post',
+            data: {
+                step: 'record',
+                filters: data,
+                recordname: $("select[name=recordname]").val()
+            },
+            success: res => {
+                console.log(res);
+                let html = "<label for=\"recordfilter\">recordfilter\n" +
+                    "            <select name=\"recordfilter\" id=\"\" onchange=\"choosefilter_record_filter()\">\n";
+                for (let i in res) {
+                    html += "                <option value=\"" +
+                        i + "\" onclick=\"nextselectoption(this)\">" + i + "</option>\n";
+                }
+                html += "            </select>\n" +
+                    "        </label>";
+                $("#tag_ul").find('li').eq(4).html(html);
+                choosefilter_record_filter();
+            },
+            error: err => {
+                console.log(err)
+            },
+            complete: res => {
+            }
+
+        })
+    };
+    choosefilter_record_filter = () => {
+        let data = [
+            $("select[name=province]").val(),
+            $("select[name=city]").val(),
+            $("select[name=county]").val(),
+        ].join(',');
+        let recordname = $("select[name=recordname]").val();
+        let recordfilter = $("select[name=recordfilter]").val();
+        $.ajax({
+            url: '/nocover/showfilter',
+            method: 'post',
+            data: {
+                step: 'recordfilter',
+                filters: data,
+                recordname: recordname,
+                recordfilter: recordfilter
+            },
+            success: res => {
+                let data = res.res;
+                let htmlhead = "<thead><<tr>";
+                for (let i in data[0].record) {
+                    htmlhead += "<th><span>" + i + "</span></th>";
+                }
+                htmlhead += "<th>操作</th></tr></thead>";
+                let htmlbody = "<tbody>";
+                for (let i in data) {
+                    htmlbody += "<tr>";
+                    for (let j in data[i].record) {
+                        if (data[i].record[j]) {
+                            htmlbody += "<td><p>" + data[i].record[j] + "</p></td>";
+                        } else {
+                            htmlbody += "<td><p>-----</p></td>";
+                        }
+                    }
+                    htmlbody += "<td><span onclick=\"gospecific(\'" + data[i]._id + "\')\">详情</a></td></tr>";
+                }
+                htmlbody += "</tbody>";
+                $("#recordfilter").html(htmlhead + htmlbody);
+            },
+            error: err => {
+            },
+            complete: res => {
+            }
+        })
+    };
+    gospecific = (_id) => {
+        $.ajax({
+            url: '/nocover/showfilter',
+            method: 'post',
+            data: {
+                step: 'record_one',
+                record_id: _id
+            },
+            success: res => {
+                console.log(res);
+            },
+            error: err => {
+            },
+            complete: res => {
+            }
+        })
+    };
+    nextselectoption = (obj) => {
+        console.log($(obj).attr('val'));
+    };
+</script>
+<script>
+    choosefilter(1);
+</script>
+</html>

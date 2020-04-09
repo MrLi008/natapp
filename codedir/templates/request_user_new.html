@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>添加任务</title>
+</head>
+<body>
+<form action="" method="post">
+    <h1>添加任务</h1>
+    <label for="url_productor">Productor:<input type="text" name="url_productor"
+                                                value="http://localhost:8008/" placeholder="转发器链接(带/)"></label>
+    <br/>
+
+    <label for="url_target">Target: <input type="text" name="url_target" placeholder="访问目标url(带/)"></label>
+    <br/>
+    <button type="submit"> 确定添加</button>
+</form>
+<div>
+    <h1>添加结果: </h1>
+    <ul>
+        {% for name, val in res.items() %}
+        <li><p>{{ name }}-----{{ val }}</p>
+        </li>
+        {% end %}
+    </ul>
+</div>
+</body>
+</html>
